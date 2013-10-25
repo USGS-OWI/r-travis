@@ -13,27 +13,20 @@ Bootstrap() {
     echo "Unknown OS: ${OS}"
     exit 1
   fi
-  
-  # Install devtools & bootstrap to github version
-  sudo R --slave --vanilla -e 'install.packages(c("devtools"), repos=c("http://cran.rstudio.com"))'
-  sudo R --slave --vanilla -e 'library(devtools); install_github("devtools")'
 }
 
 BootstrapLinux() {
-  # Update first.
-  sudo apt-get update -qq
+  # Add RStudio's CRAN repository
+  echo -e "deb http://cran.rstudio.com/bin/linux/ubuntu precise/\ndeb-src http://cran.rstudio.com/bin/linux/ubuntu precise/" > /etc/apt/sources.list.d/cran.list
+  apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E084DAB9
+  apt-get update -o Dir::Etc::sourcelist="sources.list.d/cran.list" -o Dir::Etc::sourceparts="-" -o APT::Get::List-Cleanup="0"
 
-  # TODO(craigcitro): Add this back behind a flag.
-  # Install tex.
-  # sudo apt-get install texlive-full texlive-fonts-extra
+  # Add Michael Rutter's c2d4u repository
+  apt-add-repository -y ppa:marutter/c2d4u
+  apt-get update -o Dir::Etc::sourcelist="sources.list.d/marutter-c2d4u-precise.list" -o Dir::Etc::sourceparts="-" -o APT::Get::List-Cleanup="0"
 
-  # Set up our CRAN mirror.
-  sudo add-apt-repository "deb http://cran.rstudio.com/bin/linux/ubuntu precise/"
-  sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E084DAB9
-  sudo apt-get update -qq
-
-  # Install R.
-  sudo apt-get install r-base-dev
+  # Install recommended R packages, and LaTeX
+  apt-get install --no-install-recommends r-base-dev r-cran-xml r-cran-rcurl r-recommended $extra_packages
 }
 
 BootstrapMac() {
@@ -41,6 +34,19 @@ BootstrapMac() {
 
   # Install R.
   brew install r
+}
+
+BootstrapDevTools() {
+  # Create fresh site library
+  rm -rf $R_LIBS_USER
+  mkdir $R_LIBS_USER
+
+  # Install devtools & bootstrap to github version
+  R --slave --vanilla <<EOF_R
+    install.packages(c("devtools"), repos=c("http://cran.rstudio.com"))
+    library(devtools)
+    install_github("devtools")
+EOF_R
 }
 
 GithubPackage() {
@@ -62,19 +68,38 @@ GithubPackage() {
 
   echo "Installing package: ${PACKAGE_NAME}"
   # Install the package.
-  sudo R --slave --vanilla -e "library(devtools); options(repos = c(CRAN = 'http://cran.rstudio.com')); install_github(\"${PACKAGE_NAME}\"${ARGS})"
+  R --slave --vanilla <<EOF_R
+    library(devtools)
+    options(repos = c(CRAN = "http://cran.rstudio.com"))
+    install_github("${PACKAGE_NAME}"${ARGS})
+EOF_R
 }
 
 InstallDeps() {
-  sudo R --slave --vanilla -e 'library(devtools); options(repos = c(CRAN = "http://cran.rstudio.com")); devtools:::install_deps(dependencies = TRUE)'
+  R --slave --vanilla <<EOF_R
+    library(devtools)
+    options(repos = c(CRAN = "http://cran.rstudio.com"))
+    devtools:::install_deps(dependencies = TRUE)
+EOF_R
 }
 
 RunTests() {
-  sudo R CMD build --no-build-vignettes .
+  R CMD build $build_vignettes .
   FILE=$(ls -1 *.tar.gz)
-  sudo R CMD check "${FILE}" --no-manual --as-cran
+  R CMD check "${FILE}" $manual --as-cran
   exit $?
 }
+
+mode=stable
+export R_LIBS_USER=$HOME/R-$mode
+
+RTRAVISTYPE=quick
+echo "RTRAVISTYPE: $RTRAVISTYPE" >> /dev/stderr
+case "$RTRAVISTYPE" in
+    quick) modes=stable; build_vignettes=--no-build-vignettes; export manual=--no-manual; true;;
+    full | "") modes="stable devel"; extra_packages="qpdf texinfo texlive-latex-recommended texlive-latex-extra lmodern texlive-fonts-recommended texlive-fonts-extra"; true;;
+    *) echo "Unsupported RTRAVISTYPE." >> /dev/stderr; false;;
+esac || exit 1
 
 COMMAND=$1
 echo "Running command ${COMMAND}"
@@ -82,6 +107,9 @@ shift
 case $COMMAND in
   "bootstrap")
     Bootstrap
+    ;;
+  "bootstrap_devtools")
+    BootstrapDevTools
     ;;
   "github_package")
     GithubPackage "$*"

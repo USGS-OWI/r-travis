@@ -4,11 +4,15 @@
 # FILE -- use `sample.travis.yml` instead.
 
 language: c
-script: ./travis-tool.sh run_tests
-before_script:
+install:
   - cp scripts/travis-tool.sh fakepackage
+  - sudo -E fakepackage/travis-tool.sh bootstrap
+  - fakepackage/travis-tool.sh bootstrap_devtools
+
+script: ./travis-tool.sh run_tests
+
+before_script:
   - cd fakepackage
-  - ./travis-tool.sh bootstrap
   - ./travis-tool.sh install_deps
   - ./travis-tool.sh github_package assertthat
   - ./travis-tool.sh github_package testthat
