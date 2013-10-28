@@ -6,10 +6,9 @@ set -e
 
 OS=$(uname -s)
 HAVE_DEVTOOLS="no"
+RTRAVIS_CRAN_URL=${RTRAVIS_CRAN_URL:-"http://cran.rstudio.com"}
 
 Bootstrap() {
-    RTRAVIS_CRAN_URL=${RTRAVIS_CRAN_URL:-"http://cran.rstudio.com"}
-
     if [ "Darwin" == "${OS}" ]; then
         BootstrapMac
     elif [ "Linux" == "${OS}" ]; then
@@ -20,8 +19,6 @@ Bootstrap() {
     fi
 
     echo '^travis-tool\.sh$' >> .Rbuildignore
-
-    echo "options(repos = c(CRAN = '"${RTRAVIS_CRAN_URL}"'))" | sudo tee /usr/lib/R/etc/Rprofile.site
 }
 
 BootstrapLinux() {
@@ -51,7 +48,7 @@ BootstrapMac() {
 
 DevtoolsInstall() {
     # Install devtools.
-    Rscript -e 'install.packages(c("devtools"))'
+    Rscript -e 'options(repos = c(CRAN = "'${RTRAVIS_CRAN_URL}'")); install.packages(c("devtools"))'
     Rscript -e 'library(devtools); library(methods); install_github("devtools")'
     # Mark installation
     HAVE_DEVTOOLS="yes"
@@ -79,7 +76,7 @@ RInstall() {
     fi
 
     echo "RInstall: Installing ${pkg}"
-    Rscript -e 'install.packages(commandArgs(TRUE))' --args $*
+    Rscript -e 'options(repos = c(CRAN = "'${RTRAVIS_CRAN_URL}'")); install.packages(commandArgs(TRUE))' --args $*
 }
 
 GithubPackage() {
@@ -105,7 +102,7 @@ GithubPackage() {
 
     echo "Installing package: ${PACKAGE_NAME}"
     # Install the package.
-    Rscript -e "library(devtools); library(methods); install_github(\"${PACKAGE_NAME}\"${ARGS})"
+    Rscript -e 'options(repos = c(CRAN = "'${RTRAVIS_CRAN_URL}'")); library(devtools); library(methods); install_github("'${PACKAGE_NAME}'"'${ARGS}')'
 }
 
 InstallDeps() {
@@ -113,7 +110,7 @@ InstallDeps() {
         DevtoolsInstall
     fi
 
-    Rscript -e 'library(devtools); library(methods); devtools:::install_deps(dependencies = TRUE)'
+    Rscript -e 'options(repos = c(CRAN = "'${RTRAVIS_CRAN_URL}'")); library(devtools); library(methods); devtools:::install_deps(dependencies = TRUE)'
 }
 
 RunTests() {
