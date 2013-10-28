@@ -6,7 +6,9 @@
 language: c
 # language: objective-c
 
-script: Rscript tests/test-all.R
+script:
+  - Rscript -e 'library(devtools); library(methods); options(repos=c(CRAN="'"${CRAN}"'")); devtools:::install()'
+  - Rscript tests/test-all.R
 notifications:
   email:
     on_success: change
