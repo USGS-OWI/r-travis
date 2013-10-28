@@ -6,7 +6,7 @@
 language: c
 # language: objective-c
 
-script: ./travis-tool.sh run_tests
+script: Rscript tests/test-all.R
 notifications:
   email:
     on_success: change
