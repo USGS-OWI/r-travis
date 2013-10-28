@@ -53,6 +53,13 @@ DevtoolsInstall() {
     # Install devtools.
     Rscript -e 'install.packages(c("devtools"))'
     Rscript -e 'library(devtools); library(methods); install_github("devtools")'
+}
+
+DevtoolsProvide() {
+    # Check if devtools can be loaded, install if not.
+    if [ "yes" = ${HAVE_DEVTOOLS} ]; then return; fi
+    if Rscript -e 'library(devtools)'; then return; fi
+    if ! DevtoolsInstall; then exit 1; fi
     # Mark installation
     HAVE_DEVTOOLS="yes"
 }
@@ -89,9 +96,7 @@ GithubPackage() {
     # Note that bash quoting makes this annoying for any additional
     # arguments.
 
-    if [ "no" == "${HAVE_DEVTOOLS}" ]; then
-        DevtoolsInstall
-    fi
+    DevtoolsProvide
 
     # Get the package name and strip it
     PACKAGE_NAME=$1
@@ -109,9 +114,7 @@ GithubPackage() {
 }
 
 InstallDeps() {
-    if [ "no" == "${HAVE_DEVTOOLS}" ]; then
-        DevtoolsInstall
-    fi
+    DevtoolsProvide
 
     Rscript -e 'library(devtools); library(methods); devtools:::install_deps(dependencies = TRUE)'
 }
