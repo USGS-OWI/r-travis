@@ -44,8 +44,8 @@ install:
   - Rscript -e 'library(RUnit); library(survey)'
   - ./travis-tool.sh dump_sysinfo | egrep "^R version [0-9]+\.[0-9]+\.[0-9]+"
   # Test --latex option: both asymptote and pdflatex are installed
-  - if test ${BOOTSTRAP_OPTS/--latex/} != ${BOOTSTRAP_OPTS}; then test -n "$(which asymptote)"; fi
+  - if test ${BOOTSTRAP_OPTS/--latex/} != ${BOOTSTRAP_OPTS}; then test -n "$(kpsewhich beamer.cls)"; fi
   - if test ${BOOTSTRAP_OPTS/--latex/} != ${BOOTSTRAP_OPTS}; then test -n "$(which pdflatex)"; fi
   # Test without --latex option: only pdflatex is installed
-  - if test ${BOOTSTRAP_OPTS/--latex/} = ${BOOTSTRAP_OPTS}; then test -z "$(which asymptote)"; fi
+  - if test ${BOOTSTRAP_OPTS/--latex/} = ${BOOTSTRAP_OPTS}; then test -z "$(kpsewhich beamer.cls)"; fi
   - if test ${BOOTSTRAP_OPTS/--latex/} = ${BOOTSTRAP_OPTS}; then test -n "$(which pdflatex)"; fi
