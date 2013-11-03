@@ -53,8 +53,10 @@ BootstrapLinux() {
         case $OPTION in
             "--latex")
                 sudo apt-get install --no-install-recommends \
-                    texinfo texlive-latex-recommended texlive-latex-extra \
-                    lmodern texlive-fonts-recommended texlive-fonts-extra
+                    texlive-base texlive-latex-base texlive-generic-recommended \
+                    texlive-fonts-recommended texlive-fonts-extra \
+                    texlive-extra-utils texlive-latex-recommended texlive-latex-extra \
+                    texinfo lmodern
                 ;;
         esac
     done
