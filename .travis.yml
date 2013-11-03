@@ -13,16 +13,12 @@ env:
     - BOOTSTRAP_OPTS=""
     - BOOTSTRAP_OPTS="--latex"
 script:
-  - which kpsewhich || true
-  - which pdflatex || true
   - ./travis-tool.sh run_tests
 notifications:
   email:
     on_success: change
     on_failure: change
 before_install:
-  - df || true
-  - df -h || true
   - cp scripts/travis-tool.sh fakepackage
   - cd fakepackage
   - ./travis-tool.sh bootstrap ${BOOTSTRAP_OPTS}
@@ -33,7 +29,6 @@ after_success:
 after_failure:
   - ./travis-tool.sh dump_logs
 install:
-  - PATH=/usr/texbin:$PATH
   - ls -s /usr/texbin || true
   - which kpsewhich || true
   - which pdflatex || true
@@ -44,6 +39,10 @@ install:
   - cat /etc/profile || true
   - cat /etc/bash.bashrc || true
   - ./travis-tool.sh install_deps
+  - source /etc/profile
+  - echo $PATH
+  - which kpsewhich || true
+  - which pdflatex || true
   # TESTS
   # Test r_install (which accepts multiple arguments).
   - ./travis-tool.sh r_install stringr lubridate
