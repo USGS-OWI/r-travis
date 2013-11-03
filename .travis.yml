@@ -43,3 +43,5 @@ install:
   - ./travis-tool.sh r_binary_install RUnit survey
   - Rscript -e 'library(RUnit); library(survey)'
   - ./travis-tool.sh dump_sysinfo | egrep "^R version [0-9]+\.[0-9]+\.[0-9]+"
+  - if test ${BOOTSTRAP_OPTS/--latex/} != ${BOOTSTRAP_OPTS}; then test -n "$(which pdflatex)"
+  - if test ${BOOTSTRAP_OPTS/--latex/} = ${BOOTSTRAP_OPTS}; then test -z "$(which pdflatex)"
