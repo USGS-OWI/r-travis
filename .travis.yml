@@ -21,6 +21,8 @@ notifications:
     on_success: change
     on_failure: change
 before_install:
+  - df || true
+  - df -h || true
   - cp scripts/travis-tool.sh fakepackage
   - cd fakepackage
   - ./travis-tool.sh bootstrap ${BOOTSTRAP_OPTS}
