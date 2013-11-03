@@ -72,9 +72,10 @@ BootstrapMac() {
         shift
         case $OPTION in
             "--latex")
-                # TODO(craigcitro): Figure out TeX in OSX+travis.
-                echo "LaTeX install currently unsupported on OS X."
-                exit 1
+                wget http://mirror.ctan.org/systems/mac/mactex/MacTeX.pkg -O /tmp/MacTeX.pkg
+
+                echo "Installing OS X binary package for MacTeX"
+                sudo installer -pkg "/tmp/MacTeX.pkg" -target /
                 ;;
         esac
     done
