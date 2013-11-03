@@ -39,7 +39,11 @@ install:
   - which kpsewhich || true
   - which pdflatex || true
   - echo $PATH
-  - cat ~/.bash_profile
+  - cat ~/.bash_profile || true
+  - cat ~/.bash_login || true
+  - cat ~/.profile || true
+  - cat /etc/profile || true
+  - cat /etc/bash.bashrc || true
   # Test --latex option: pdflatex, kpsewhich
   - if test "${BOOTSTRAP_OPTS/--latex/}" != "${BOOTSTRAP_OPTS}"; then test -n "$(which kpsewhich)"; fi
   - if test "${BOOTSTRAP_OPTS/--latex/}" != "${BOOTSTRAP_OPTS}"; then test -n "$(which pdflatex)"; fi
