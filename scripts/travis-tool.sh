@@ -75,7 +75,7 @@ BootstrapMac() {
                 wget http://mirror.ctan.org/systems/mac/mactex/MacTeX.pkg -O /tmp/MacTeX.pkg
 
                 echo "Installing OS X binary package for MacTeX"
-                sudo installer -pkg "/tmp/MacTeX.pkg" -target /
+                sudo installer -pkginfo -volinfo -verboseR -pkg "/tmp/MacTeX.pkg" -target /
                 ;;
         esac
     done
