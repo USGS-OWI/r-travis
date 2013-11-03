@@ -74,11 +74,12 @@ BootstrapMac() {
         case $OPTION in
             "--latex")
                 # TODO: Install MacTeX.pkg once there's enough disk space
-                wget http://ctan.math.utah.edu/ctan/tex-archive/systems/mac/mactex/mactex-basic.pkg -O /tmp/mactex-basic.pkg
+                MACTEX=mactex-basic.pkg
+                wget http://ctan.math.utah.edu/ctan/tex-archive/systems/mac/mactex/$MACTEX -O "/tmp/$MACTEX"
 
                 echo "Installing OS X binary package for MacTeX"
-                sudo installer -verboseR -dumplog -pkg "/tmp/mactex-basic.pkg" -target /
-                rm "/tmp/MacTeX.pkg"
+                sudo installer -verboseR -dumplog -pkg "/tmp/$MACTEX" -target /
+                rm "/tmp/$MACTEX"
                 ;;
         esac
     done
