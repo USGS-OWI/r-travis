@@ -3,8 +3,8 @@
 # If you're looking to use r-travis with your project, DO NOT USE THIS
 # FILE -- use `sample.travis.yml` instead.
 
-language: c
-# language: objective-c
+# language: c
+language: objective-c
 
 env:
   global:
@@ -30,16 +30,9 @@ after_failure:
 install:
   - ./travis-tool.sh install_deps
   # TESTS
-  #
-  # The following lines exist to test various features of our travis
-  # scripts; don't use these as a model for other `.travis.yml` files.
-  # Test aptget_install with multiple arguments.
-  - ./travis-tool.sh aptget_install tmux psmisc
   # Test r_install (which accepts multiple arguments).
   - ./travis-tool.sh r_install stringr lubridate
   - Rscript -e 'library(stringr); library(lubridate)'
   - ./travis-tool.sh github_package assertthat
   - ./travis-tool.sh github_package testthat
-  - ./travis-tool.sh r_binary_install RUnit survey
-  - Rscript -e 'library(RUnit); library(survey)'
   - ./travis-tool.sh dump_sysinfo | egrep "^R version [0-9]+\.[0-9]+\.[0-9]+"
