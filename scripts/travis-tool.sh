@@ -188,7 +188,6 @@ case $COMMAND in
         echo '***** devtools_install is deprecated and will soon disappear. *****'
         ;;
     "aptget_install")
-        AptGetInstall "$*"
         ;;
     "r_install")
         RInstall "$*"
@@ -197,7 +196,6 @@ case $COMMAND in
         RBinaryInstall "$*"
         ;;
     "github_package")
-        GithubPackage "$*"
         ;;
     "install_deps")
         InstallDeps
