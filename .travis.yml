@@ -36,6 +36,8 @@ install:
   - ./travis-tool.sh github_package assertthat
   - ./travis-tool.sh github_package testthat
   - ./travis-tool.sh dump_sysinfo | egrep "^R version [0-9]+\.[0-9]+\.[0-9]+"
+  - which kpsewhich
+  - which pdflatex
   # Test --latex option: pdflatex, kpsewhich
   - if test "${BOOTSTRAP_OPTS/--latex/}" != "${BOOTSTRAP_OPTS}"; then test -n "$(which kpsewhich)"; fi
   - if test "${BOOTSTRAP_OPTS/--latex/}" != "${BOOTSTRAP_OPTS}"; then test -n "$(which pdflatex)"; fi
