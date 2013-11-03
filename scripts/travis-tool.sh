@@ -52,7 +52,7 @@ BootstrapLinux() {
         shift
         case $OPTION in
             "--latex")
-                apt-get install --no-install-recommends \
+                sudo apt-get install --no-install-recommends \
                     texinfo texlive-latex-recommended texlive-latex-extra \
                     lmodern texlive-fonts-recommended texlive-fonts-extra
                 ;;
