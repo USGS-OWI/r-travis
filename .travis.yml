@@ -36,14 +36,8 @@ install:
   - ./travis-tool.sh github_package assertthat
   - ./travis-tool.sh github_package testthat
   - ./travis-tool.sh dump_sysinfo | egrep "^R version [0-9]+\.[0-9]+\.[0-9]+"
-  - which kpsewhich || true
-  - kpsewhich beamer.cls || true
-  - which pdflatex || true
-  - which asymptote || true
-  - which biblatex || true
-  # Test --latex option: kpsewhich, beamer.cls, pdflatex
+  # Test --latex option: pdflatex, kpsewhich
   - if test "${BOOTSTRAP_OPTS/--latex/}" != "${BOOTSTRAP_OPTS}"; then test -n "$(which kpsewhich)"; fi
-  - if test "${BOOTSTRAP_OPTS/--latex/}" != "${BOOTSTRAP_OPTS}"; then test -n "$(kpsewhich beamer.cls)"; fi
   - if test "${BOOTSTRAP_OPTS/--latex/}" != "${BOOTSTRAP_OPTS}"; then test -n "$(which pdflatex)"; fi
   # Test without --latex option: no pdflatex, no kpsewhich
   - if test "${BOOTSTRAP_OPTS/--latex/}" = "${BOOTSTRAP_OPTS}"; then test -z "$(which kpsewhich)"; fi
