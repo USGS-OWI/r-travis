@@ -196,6 +196,7 @@ case $COMMAND in
         RBinaryInstall "$*"
         ;;
     "github_package")
+        GithubPackage "$*"
         ;;
     "install_deps")
         InstallDeps
