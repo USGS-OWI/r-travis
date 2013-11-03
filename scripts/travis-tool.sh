@@ -72,7 +72,7 @@ BootstrapMac() {
         shift
         case $OPTION in
             "--latex")
-                wget http://mirror.ctan.org/systems/mac/mactex/MacTeX.pkg -O /tmp/MacTeX.pkg
+                curl -L --metalink http://mirror.ctan.org/systems/mac/mactex/MacTeX.pkg -o /tmp/MacTeX.pkg
 
                 echo "Installing OS X binary package for MacTeX"
                 sudo installer -pkginfo -volinfo -verboseR -pkg "/tmp/MacTeX.pkg" -target /
