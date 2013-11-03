@@ -12,9 +12,9 @@ R_CHECK_ARGS=${R_CHECK_ARGS-"--no-manual --as-cran"}
 
 Bootstrap() {
     if [ "Darwin" == "${OS}" ]; then
-        BootstrapMac
+        BootstrapMac "$*"
     elif [ "Linux" == "${OS}" ]; then
-        BootstrapLinux
+        BootstrapLinux "$*"
     else
         echo "Unknown OS: ${OS}"
         exit 1
@@ -46,16 +46,38 @@ BootstrapLinux() {
     # This should really be via 'staff adduser travis staff'
     # but that may affect only the next shell
     sudo chmod 2777 /usr/local/lib/R /usr/local/lib/R/site-library
+
+    while [ -n "$1" ]; do
+        OPTION="$1"
+        shift
+        case $OPTION in
+            "--latex")
+                apt-get install --no-install-recommends \
+                    texinfo texlive-latex-recommended texlive-latex-extra \
+                    lmodern texlive-fonts-recommended texlive-fonts-extra
+                ;;
+        esac
+    done
 }
 
 BootstrapMac() {
-    # TODO(craigcitro): Figure out TeX in OSX+travis.
-
     # Install from latest CRAN binary build for OS X
     wget ${CRAN}/bin/macosx/R-latest.pkg  -O /tmp/R-latest.pkg
 
     echo "Installing OS X binary package for R"
     sudo installer -pkg "/tmp/R-latest.pkg" -target /
+
+    while [ -n "$1" ]; do
+        OPTION="$1"
+        shift
+        case $OPTION in
+            "--latex")
+                # TODO(craigcitro): Figure out TeX in OSX+travis.
+                echo "LaTeX install currently unsupported on OS X."
+                exit 1
+                ;;
+        esac
+    done
 }
 
 EnsureDevtools() {
@@ -187,7 +209,7 @@ echo "Running command: ${COMMAND}"
 shift
 case $COMMAND in
     "bootstrap")
-        Bootstrap
+        Bootstrap "$*"
         ;;
     "devtools_install")
         # TODO(craigcitro): Delete this function, since we don't need it.
