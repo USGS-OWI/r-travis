@@ -7,7 +7,11 @@ language: c
 # language: objective-c
 
 env:
-  - R_BUILD_ARGS=" "
+  global:
+    - R_BUILD_ARGS=" "
+  matrix:
+    - BOOTSTRAP_OPTS=""
+    - BOOTSTRAP_OPTS="--latex"
 script: ./travis-tool.sh run_tests
 notifications:
   email:
@@ -16,7 +20,7 @@ notifications:
 before_install:
   - cp scripts/travis-tool.sh fakepackage
   - cd fakepackage
-  - ./travis-tool.sh bootstrap
+  - ./travis-tool.sh bootstrap ${BOOTSTRAP_OPTS}
 before_script:
   - ./travis-tool.sh dump_sysinfo
 after_success:
