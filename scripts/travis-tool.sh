@@ -66,6 +66,7 @@ BootstrapMac() {
 
     echo "Installing OS X binary package for R"
     sudo installer -pkg "/tmp/R-latest.pkg" -target /
+    rm "/tmp/R-latest.pkg"
 
     while [ -n "$1" ]; do
         OPTION="$1"
@@ -76,6 +77,7 @@ BootstrapMac() {
 
                 echo "Installing OS X binary package for MacTeX"
                 sudo installer -pkginfo -volinfo -verboseR -pkg "/tmp/MacTeX.pkg" -target /
+                rm "/tmp/MacTeX.pkg"
                 ;;
         esac
     done
