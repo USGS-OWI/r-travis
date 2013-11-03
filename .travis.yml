@@ -21,6 +21,7 @@ before_install:
   - cp scripts/travis-tool.sh fakepackage
   - cd fakepackage
   - ./travis-tool.sh bootstrap ${BOOTSTRAP_OPTS}
+  - source /etc/profile # Need to reload PATH on OS X
 before_script:
   - ./travis-tool.sh dump_sysinfo
 after_success:

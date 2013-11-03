@@ -68,16 +68,20 @@ BootstrapMac() {
 
     echo "Installing OS X binary package for R"
     sudo installer -pkg "/tmp/R-latest.pkg" -target /
+    rm "/tmp/R-latest.pkg"
 
     while [ -n "$1" ]; do
         OPTION="$1"
         shift
         case $OPTION in
             "--latex")
-                wget http://ctan.math.utah.edu/ctan/tex-archive/systems/mac/mactex/MacTeX.pkg -O /tmp/MacTeX.pkg
+                # TODO: Install MacTeX.pkg once there's enough disk space
+                MACTEX=mactex-basic.pkg
+                wget http://ctan.math.utah.edu/ctan/tex-archive/systems/mac/mactex/$MACTEX -O "/tmp/$MACTEX"
 
                 echo "Installing OS X binary package for MacTeX"
-                sudo installer -pkginfo -volinfo -verboseR -pkg "/tmp/MacTeX.pkg" -target /
+                sudo installer -verboseR -dumplog -pkg "/tmp/$MACTEX" -target /
+                rm "/tmp/$MACTEX"
                 ;;
         esac
     done
