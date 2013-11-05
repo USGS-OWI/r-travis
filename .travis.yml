@@ -20,6 +20,7 @@ notifications:
 before_install:
   - cp scripts/travis-tool.sh fakepackage
   - cd fakepackage
+  - if ./travis-tool.sh check_noop; then exit 0; fi
   - ./travis-tool.sh bootstrap
   - source /etc/profile # Need to reload PATH on OS X
 before_script:

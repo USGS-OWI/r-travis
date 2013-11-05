@@ -10,6 +10,10 @@ OS=$(uname -s)
 R_BUILD_ARGS=${R_BUILD_ARGS-"--no-build-vignettes"}
 R_CHECK_ARGS=${R_CHECK_ARGS-"--no-manual --as-cran"}
 
+CheckNoop() {
+    false
+}
+
 Bootstrap() {
     if [ "Darwin" == "${OS}" ]; then
         BootstrapMac
@@ -209,10 +213,19 @@ RunTests() {
     R CMD check "${FILE}" ${R_CHECK_ARGS}
 }
 
+# Don't do anything in no-op case
+if CheckNoop; then
+    exit 0
+fi
+
 COMMAND=$1
 echo "Running command: ${COMMAND}"
 shift
 case $COMMAND in
+    "check_noop")
+        # We passed CheckNoop before, so it's not a no-op here
+        exit 1
+        ;;
     "bootstrap")
         Bootstrap
         ;;
