@@ -127,11 +127,11 @@ BootstrapWine() {
 
     # Create R and Rscript scripts
     ( echo '#!/bin/sh';
-      echo 'wine "'"$HOME/.wine/drive_c/Program Files/R/R-*/bin/R.exe"'" "$*"' ) |
+      echo 'wine "'"$HOME/.wine/drive_c/Program Files/R/"R-*/bin/R.exe'" "$*"' ) |
       sudo tee /usr/local/bin/R
     sudo chmod +x /usr/local/bin/R
     ( echo '#!/bin/sh';
-      echo 'wine "'"$HOME/.wine/drive_c/Program Files/R/R-*/bin/Rscript.exe"'" "$*"' ) |
+      echo 'wine "'"$HOME/.wine/drive_c/Program Files/R/"R-*/bin/Rscript.exe'" "$*"' ) |
       sudo tee /usr/local/bin/Rscript
     sudo chmod +x /usr/local/bin/Rscript
 
