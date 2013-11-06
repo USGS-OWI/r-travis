@@ -167,7 +167,7 @@ EnsureDevtools() {
             RInstall devtools testthat
         fi
         # Bootstrap devtools to the live version on github.
-        Rscript -e 'library(devtools); library(methods); install_github("devtools")'
+        Rscript -e 'library(devtools); library(methods); install_github("devtools", args=list(INSTALL_args="--no-multiarch")'
     fi
 }
 
