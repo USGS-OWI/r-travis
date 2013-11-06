@@ -18,7 +18,11 @@ Bootstrap() {
     if [ "Darwin" == "${OS}" ]; then
         BootstrapMac
     elif [ "Linux" == "${OS}" ]; then
-        BootstrapLinux
+        if [ -n "${WINE}" ]; then
+            BootstrapWine
+        else
+            BootstrapLinux
+        fi
     else
         echo "Unknown OS: ${OS}"
         exit 1
@@ -86,6 +90,50 @@ BootstrapMacOptions() {
         echo "Installing OS X binary package for MacTeX"
         sudo installer -pkg "/tmp/$MACTEX" -target /
         rm "/tmp/$MACTEX"
+    fi
+}
+
+BootstrapWine() {
+    # Start xvfb.
+    sh -e /etc/init.d/xvfb start
+
+    # Set up Wine PPA.
+    sudo apt-add-repository -y ppa:ubuntu-wine/ppa
+
+    # Update after adding all repositories.
+    sudo apt-get update -qq
+
+    # Install Wine.
+    sudo apt-get install -q -y wine
+
+    # Initialize Wine.
+    wineboot
+
+    # Download R.
+    wget ${CRAN}/bin/windows/base/release.htm -O /tmp/R-stable-win.exe
+
+    # Install R.
+    wine /tmp/R-stable-win.exe /silent
+
+    # Create R and Rscript scripts
+    cat | sudo tee /usr/local/bin/R << "END_SH"
+    ( echo '#!/bin/sh';
+      echo 'wine ".wine/drive_c/Program Files/R/R-*/bin/R.exe" "$*"' ) |
+      sudo tee /usr/local/bin/R
+    sudo chmod +x /usr/local/bin/R
+    ( echo '#!/bin/sh';
+      echo 'wine ".wine/drive_c/Program Files/R/R-*/bin/Rscript.exe" "$*"' ) |
+      sudo tee /usr/local/bin/Rscript
+    sudo chmod +x /usr/local/bin/Rscript
+
+    # Process options
+    BootstrapWineOptions
+}
+
+BootstrapWineOptions() {
+    if [ -n "$BOOTSTRAP_LATEX" ]; then
+        echo "LaTeX currently not supported on Wine."
+        exit 1
     fi
 }
 

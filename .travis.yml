@@ -12,12 +12,14 @@ env:
   matrix:
     - BOOTSTRAP_LATEX=""
     - BOOTSTRAP_LATEX="1"
+    - WINE="1" DISPLAY=":99.0"
 script: ./travis-tool.sh run_tests
 notifications:
   email:
     on_success: change
     on_failure: change
 before_install:
+  - env
   - cp scripts/travis-tool.sh fakepackage
   - cd fakepackage
   - if ./travis-tool.sh check_noop; then exit 0; fi
