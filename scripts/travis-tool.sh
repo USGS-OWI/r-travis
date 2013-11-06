@@ -122,7 +122,6 @@ BootstrapWine() {
     wine /tmp/R-stable-win.exe /silent
 
     # Create R and Rscript scripts
-    cat | sudo tee /usr/local/bin/R << "END_SH"
     ( echo '#!/bin/sh';
       echo 'wine ".wine/drive_c/Program Files/R/R-*/bin/R.exe" "$*"' ) |
       sudo tee /usr/local/bin/R
