@@ -116,10 +116,13 @@ BootstrapWine() {
     wineboot
 
     # Download R.
-    wget ${CRAN}/bin/windows/base/release.htm -O /tmp/R-stable-win.exe
+    R_FILENAME=$(wget ${CRAN}/bin/windows/base/release.htm -O - |
+        sed -n -r '/CONTENT="0; URL=.*\.exe"/{s/^.*URL=(.*)">.*$/\1/;p}')
+    wget ${CRAN}/bin/windows/base/${R_FILENAME} -O /tmp/${R_FILENAME}
 
     # Install R.
-    wine /tmp/R-stable-win.exe /silent
+    wine /tmp/${R_FILENAME} /silent
+    rm /tmp/${R_FILENAME}
 
     # Create R and Rscript scripts
     ( echo '#!/bin/sh';
