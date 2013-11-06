@@ -34,7 +34,7 @@ Bootstrap() {
 }
 
 BootstrapLinux() {
-    echo "$ # Adding CRAN apt repository"
+    echo "$ # Adding CRAN apt repository" > /dev/stderr
 
     # Set up our CRAN mirror.
     sudo add-apt-repository "deb ${CRAN}/bin/linux/ubuntu $(lsb_release -cs)/"
