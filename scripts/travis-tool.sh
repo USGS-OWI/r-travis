@@ -34,16 +34,24 @@ Bootstrap() {
 }
 
 BootstrapLinux() {
+    echo "$ # Adding CRAN apt repository"
+
     # Set up our CRAN mirror.
     sudo add-apt-repository "deb ${CRAN}/bin/linux/ubuntu $(lsb_release -cs)/"
     sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E084DAB9
+
+    echo "$ # Adding Michael Rutter's apt repository"
 
     # Add marutter's c2d4u repository.
     sudo add-apt-repository -y "ppa:marutter/rrutter"
     sudo add-apt-repository -y "ppa:marutter/c2d4u"
 
+    echo "$ # Updating"
+
     # Update after adding all repositories.
     sudo apt-get update -qq
+
+    echo "$ # Installing R development environment"
 
     # Install an R development environment. qpdf is also needed for
     # --as-cran checks:
