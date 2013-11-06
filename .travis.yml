@@ -19,6 +19,7 @@ notifications:
     on_success: change
     on_failure: change
 before_install:
+  - cat $0
   - env
   - cp scripts/travis-tool.sh fakepackage
   - cd fakepackage
