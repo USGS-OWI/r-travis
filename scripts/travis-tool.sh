@@ -6,6 +6,9 @@ set -e
 
 CRAN=${CRAN:-"http://cran.rstudio.com"}
 OS=$(uname -s)
+if [ -n "${WINE}" -a "Linux" == ${OS} ]; then
+    OS=Wine
+fi
 
 R_BUILD_ARGS=${R_BUILD_ARGS-"--no-build-vignettes"}
 R_CHECK_ARGS=${R_CHECK_ARGS-"--no-manual --as-cran"}
@@ -24,11 +27,9 @@ Bootstrap() {
     if [ "Darwin" == "${OS}" ]; then
         BootstrapMac
     elif [ "Linux" == "${OS}" ]; then
-        if [ -n "${WINE}" ]; then
-            BootstrapWine
-        else
-            BootstrapLinux
-        fi
+        BootstrapLinux
+    elif [ "Wine" == "${OS}" ]; then
+        BootstrapWine
     else
         echo "Unknown OS: ${OS}"
         exit 1
