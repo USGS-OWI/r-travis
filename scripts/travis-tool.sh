@@ -11,6 +11,12 @@ R_BUILD_ARGS=${R_BUILD_ARGS-"--no-build-vignettes"}
 R_CHECK_ARGS=${R_CHECK_ARGS-"--no-manual --as-cran"}
 
 CheckNoop() {
+    if [ "Darwin" == "${OS}" ]; then
+        if [ -n "${WINE}" ]; then
+            return
+        fi
+    fi
+
     false
 }
 
