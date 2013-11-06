@@ -134,6 +134,19 @@ BootstrapWine() {
         sudo chmod +x /usr/local/bin/${EXE}
     done
 
+    # Download Rtools.
+    # TODO: Figure out latest path automatically
+    RTOOLS_FILENAME=Rtools31.exe
+    wget ${CRAN}/bin/windows/Rtools/${RTOOLS_FILENAME} -O /tmp/${RTOOLS_FILENAME}
+
+    # Install Rtools.
+    unix2dos > /tmp/rtools.inf << "END_CAT"
+[Setup]
+Tasks=setpath,recordversion
+END_CAT
+    wine /tmp/${RTOOLS_FILENAME} /silent /loadinf=/tmp/rtools.inf
+    rm /tmp/${RTOOLS_FILENAME}
+
     # Process options
     BootstrapWineOptions
 }
