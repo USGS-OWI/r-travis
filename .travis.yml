@@ -9,8 +9,8 @@ language: c
 env:
   global:
     - R_BUILD_ARGS=" "
+    - R_CHECK_ARGS="--as-cran"
   matrix:
-    #- BOOTSTRAP_LATEX=""
     #- BOOTSTRAP_LATEX="1"
     - WINE="1" DISPLAY=":99.0"
 script: ./travis-tool.sh run_tests
@@ -25,7 +25,6 @@ before_install:
   - cd fakepackage
   - if ./travis-tool.sh check_noop; then exit 0; fi
   - ./travis-tool.sh bootstrap
-  - source /etc/profile # Need to reload PATH on OS X
 before_script:
   - ./travis-tool.sh dump_sysinfo
 after_success:
@@ -56,6 +55,3 @@ install:
   - if test ${OS} = Linux; then ./travis-tool.sh r_binary_install RUnit survey; fi
   - if test ${OS} = Linux; then Rscript -e 'library(RUnit); library(survey)'; fi
   - ./travis-tool.sh dump_sysinfo | grep -q 'R version '
-  # Test --latex option: pdflatex, kpsewhich
-  - if test "${BOOTSTRAP_OPTS/--latex/}" != "${BOOTSTRAP_OPTS}"; then test -n "$(which kpsewhich)"; fi
-  - if test "${BOOTSTRAP_OPTS/--latex/}" != "${BOOTSTRAP_OPTS}"; then test -n "$(which pdflatex)"; fi
