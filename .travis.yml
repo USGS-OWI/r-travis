@@ -18,6 +18,7 @@ notifications:
     on_success: change
     on_failure: change
 before_install:
+  - echo "$0" "$*"
   - cp scripts/travis-tool.sh fakepackage
   - cd fakepackage
   - ./travis-tool.sh bootstrap
@@ -25,7 +26,6 @@ before_script:
   - ./travis-tool.sh dump_sysinfo
 after_success:
   - ./travis-tool.sh dump_logs_by_extension out
-  - cat $0
 after_failure:
   - ./travis-tool.sh dump_logs
 install:
