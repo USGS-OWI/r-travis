@@ -130,10 +130,12 @@ BootstrapWine() {
       echo 'wine "'"$HOME/.wine/drive_c/Program Files/R/"R-*/bin/x64/R.exe'" "$*"' ) |
       sudo tee /usr/local/bin/R
     sudo chmod +x /usr/local/bin/R
+    cat /usr/local/bin/R
     ( echo '#!/bin/sh';
       echo 'wine "'"$HOME/.wine/drive_c/Program Files/R/"R-*/bin/x64/Rscript.exe'" "$*"' ) |
       sudo tee /usr/local/bin/Rscript
     sudo chmod +x /usr/local/bin/Rscript
+    cat /usr/local/bin/Rscript
 
     # Process options
     BootstrapWineOptions
