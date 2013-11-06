@@ -136,6 +136,14 @@ BootstrapWine() {
       sudo tee /usr/local/bin/Rscript
     sudo chmod +x /usr/local/bin/Rscript
     cat /usr/local/bin/Rscript
+    ls "$HOME/.wine/drive_c/Program Files/R/"R-*/bin/x64/Rscript.exe || true
+    ls "$HOME/.wine/drive_c/Program Files/R/"R-*/bin/x64 || true
+    ls "$HOME/.wine/drive_c/Program Files/R/"R-*/bin || true
+    ls "$HOME/.wine/drive_c/Program Files/R/"R-* || true
+    ls "$HOME/.wine/drive_c/Program Files/R" || true
+    ls "$HOME/.wine/drive_c/Program Files" || true
+    ls "$HOME/.wine/drive_c" || true
+    ls "$HOME/.wine" || true
 
     # Process options
     BootstrapWineOptions
