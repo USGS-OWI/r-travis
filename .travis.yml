@@ -10,8 +10,8 @@ env:
   global:
     - R_BUILD_ARGS=" "
   matrix:
-    - BOOTSTRAP_LATEX=""
-    - BOOTSTRAP_LATEX="1"
+    #- BOOTSTRAP_LATEX=""
+    #- BOOTSTRAP_LATEX="1"
     - WINE="1" DISPLAY=":99.0"
 script: ./travis-tool.sh run_tests
 notifications:
