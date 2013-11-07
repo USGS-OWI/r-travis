@@ -10,7 +10,7 @@ env:
   matrix:
     - BOOTSTRAP_LATEX=" "
     - R_BUILD_ARGS=" " R_CHECK_ARGS="--as-cran" BOOTSTRAP_LATEX="1"
-script: ./travis-tool.sh run_tests
+script: RunTests
 notifications:
   email:
     on_success: change
@@ -20,13 +20,13 @@ before_install:
   - cd fakepackage
   - source ./travis-tool.sh bootstrap
 before_script:
-  - ./travis-tool.sh dump_sysinfo
+  - DumpSysinfo
 after_success:
-  - ./travis-tool.sh dump_logs_by_extension out
+  - DumpLogsByExtension out
 after_failure:
-  - ./travis-tool.sh dump_logs
+  - DumpLogs
 install:
-  - ./travis-tool.sh install_deps
+  - InstallDeps
   # TESTS
   #
   # The following lines exist to test various features of our travis
@@ -38,14 +38,14 @@ install:
   - if test ${OS} = Linux; then test -n "$(which tmux)"; fi
   - if test ${OS} = Linux; then test -n "$(which sponge)"; fi
   # Test r_install (which accepts multiple arguments).
-  - ./travis-tool.sh r_install stringr lubridate
+  - RInstall stringr lubridate
   - Rscript -e 'library(stringr); library(lubridate)'
   # Test github package installation.
   - Rscript -e 'stopifnot(!any(c("assertthat", "testthat") %in% installed.packages())'
-  - ./travis-tool.sh github_package assertthat
-  - ./travis-tool.sh github_package testthat
+  - GithubPackage assertthat
+  - GithubPackage testthat
   - Rscript -e 'library(assertthat); library(testthat)'
   # Test R binary installation.
-  - if test ${OS} = Linux; then ./travis-tool.sh r_binary_install RUnit survey; fi
+  - if test ${OS} = Linux; then RBinaryInstall RUnit survey; fi
   - if test ${OS} = Linux; then Rscript -e 'library(RUnit); library(survey)'; fi
-  - ./travis-tool.sh dump_sysinfo | grep -q 'R version '
+  - DumpSysinfo | grep -q 'R version '
