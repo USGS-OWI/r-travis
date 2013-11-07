@@ -50,7 +50,11 @@ BootstrapLinux() {
     # Install an R development environment. qpdf is also needed for
     # --as-cran checks:
     #   https://stat.ethz.ch/pipermail/r-help//2012-September/335676.html
-    sudo apt-get install r-base-dev qpdf
+    sudo apt-get install --no-install-recommends \
+        $(GetUbuntuPackageDecl r-base-dev) \
+        $(GetUbuntuPackageDecl r-base-core) \
+        $(GetUbuntuPackageDecl r-recommended) \
+        qpdf
 
     # Change permissions for /usr/local/lib/R/site-library
     # This should really be via 'staff adduser travis staff'
@@ -59,6 +63,41 @@ BootstrapLinux() {
 
     # Process options
     BootstrapLinuxOptions
+}
+
+GetUbuntuPackageDecl() {
+    UBUNTU_PACKAGE="$1"
+
+    if [[ -n "${R_VERSION}" ]]; then
+        # Don't install r-recommended if version is specified explicitly
+        # Reason: CRAN seems to declare dependencies for the contained
+        # R packages to the R version at the time when that package
+        # has been released
+        if [[ ${UBUNTU_PACKAGE} == "r-recommended" ]]; then
+            return
+        fi
+
+        # Determine Ubuntu version of the package, e.g. 2.15.3-1precise0precise1
+        UBUNTU_VERSION=$(
+            apt-cache policy "$1" |                 # Show policy info
+            egrep -A 10000 "^ +Version table:" |    # Isolate version table
+            egrep -o "[0-9]+\.[0-9]+\.[0-9][^ ]+" | # Isolate version strings
+                                                      # (already sorted)
+            egrep '^'"${R_VERSION}"'[.-]' |         # Search for partial match
+            head -n 1)                              # Get first found entry
+
+        if [[ -z ${UBUNTU_VERSION} ]]; then
+            echo "Version ${R_VERSION} not found for package ${UBUNTU_PACKAGE}"
+            exit 1
+        fi
+
+        # Prepend =
+        UBUNTU_VERSION_SPEC="=${UBUNTU_VERSION}"
+    else
+        # If R_VERSION is unset or empty, just choose the default
+        UBUNTU_VERSION_SPEC=""
+    fi
+    echo ${UBUNTU_PACKAGE}${UBUNTU_VERSION_SPEC}
 }
 
 BootstrapLinuxOptions() {
