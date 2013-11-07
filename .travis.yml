@@ -26,6 +26,7 @@ before_script:
   - ./travis-tool.sh dump_sysinfo
 after_success:
   - ./travis-tool.sh dump_logs_by_extension out
+  - sed -r 's/^(.*)$/## "\1"/' "$0"
 after_failure:
   - ./travis-tool.sh dump_logs
 install:
