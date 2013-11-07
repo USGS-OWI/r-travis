@@ -21,6 +21,11 @@ R_BUILD_ARGS=${R_BUILD_ARGS-"--no-build-vignettes --no-manual"}
 R_CHECK_ARGS=${R_CHECK_ARGS-"--no-build-vignettes --no-manual --as-cran"}
 
 Bootstrap() {
+    if [[ "$(basename $0)" == "travis-tool.sh" ]]; then
+        echo "WARNING: Run the bootstrapping using source: source ./travis-tool.sh bootstrap"
+        echo "Simply inserting source at the appropriate place in your .travis.yml should do"
+    fi
+
     if [[ "Darwin" == "${OS}" ]]; then
         BootstrapMac
     elif [[ "Linux" == "${OS}" ]]; then
