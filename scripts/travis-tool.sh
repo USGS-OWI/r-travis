@@ -47,6 +47,8 @@ BootstrapLinux() {
     # Update after adding all repositories.
     sudo apt-get update -qq
 
+    sudo apt-get install aptitude
+
     # Install an R development environment. qpdf is also needed for
     # --as-cran checks:
     #   https://stat.ethz.ch/pipermail/r-help//2012-September/335676.html
