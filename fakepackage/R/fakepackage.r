@@ -5,5 +5,8 @@ three <- function() {
 
 #' Check to see if our argument is three.
 is_three <- function(x) {
+  require(logging)
   see_if(are_equal(3, x))
 }
+
+
