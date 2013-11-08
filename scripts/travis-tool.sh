@@ -52,7 +52,7 @@ BootstrapLinux() {
     # Install an R development environment. qpdf is also needed for
     # --as-cran checks:
     #   https://stat.ethz.ch/pipermail/r-help//2012-September/335676.html
-    sudo aptitude install -R -y -o "Aptitude::ProblemResolver::Non-Default-Level=10000" \
+    sudo aptitude install -R -y -o "Aptitude::ProblemResolver::Non-Default-Level=5000" \
         $(GetUbuntuPackageDecl r-base-dev) \
         $(GetUbuntuPackageDecl r-base-core) \
         $(GetUbuntuPackageDecl r-recommended)
