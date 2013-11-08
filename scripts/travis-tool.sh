@@ -50,11 +50,7 @@ BootstrapLinux() {
     # Install an R development environment. qpdf is also needed for
     # --as-cran checks:
     #   https://stat.ethz.ch/pipermail/r-help//2012-September/335676.html
-    sudo apt-get install --no-install-recommends -o Debug::pkgProblemResolver=Yes -o Debug::pkgPolicy=Yes \
-        r-base-dev r-base-core r-recommended \
-        qpdf
-
-    sudo apt-get install --no-install-recommends -o Debug::pkgProblemResolver=Yes -o Debug::pkgPolicy=Yes \
+    sudo aptitude install -r \
         $(GetUbuntuPackageDecl r-base-dev) \
         $(GetUbuntuPackageDecl r-base-core) \
         $(GetUbuntuPackageDecl r-recommended)
