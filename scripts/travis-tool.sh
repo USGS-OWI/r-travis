@@ -69,14 +69,6 @@ GetUbuntuPackageDecl() {
     UBUNTU_PACKAGE="$1"
 
     if [[ -n "${R_VERSION}" ]]; then
-        # Don't install r-recommended if version is specified explicitly
-        # Reason: CRAN seems to declare dependencies for the contained
-        # R packages to the R version at the time when that package
-        # has been released
-        if [[ ${UBUNTU_PACKAGE} == "r-recommended" ]]; then
-            return
-        fi
-
         # Determine Ubuntu version of the package, e.g. 2.15.3-1precise0precise1
         UBUNTU_VERSION=$(
             apt-cache policy "$1" |                 # Show policy info
