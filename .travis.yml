@@ -19,7 +19,7 @@ notifications:
     on_failure: change
 before_install:
   - sudo apt-get install mailutils
-  - mail -s "Test mail from Travis" mail@kirill-mueller.de
+  - mail -s "Test mail from Travis" mail@kirill-mueller.de < /dev/null
   - cp scripts/travis-tool.sh fakepackage
   - cd fakepackage
   - ./travis-tool.sh bootstrap
