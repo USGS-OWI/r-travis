@@ -52,16 +52,13 @@ BootstrapLinux() {
     # Install an R development environment. qpdf is also needed for
     # --as-cran checks:
     #   https://stat.ethz.ch/pipermail/r-help//2012-September/335676.html
-    sudo aptitude install -R -y -o "Aptitude::ProblemResolver::Non-Default-Level=5000" \
+    sudo aptitude install -R -y -o "Aptitude::ProblemResolver::Non-Default-Level=10000" \
         $(GetUbuntuPackageDecl r-base-dev) \
         $(GetUbuntuPackageDecl r-base-core) \
         $(GetUbuntuPackageDecl r-recommended)
 
     # Put packages on hold
-    sudo aptitude install -R -y \
-        $(GetUbuntuPackageDecl r-base-dev)= \
-        $(GetUbuntuPackageDecl r-base-core)= \
-        $(GetUbuntuPackageDecl r-recommended)=
+    sudo aptitude install -R -y r-base-dev= r-base-core= r-recommended=
 
     # Change permissions for /usr/local/lib/R/site-library
     # This should really be via 'staff adduser travis staff'
