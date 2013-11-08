@@ -19,6 +19,7 @@ before_install:
   - cp scripts/travis-tool.sh fakepackage
   - cd fakepackage
   - ./travis-tool.sh bootstrap
+  - ./travis-tool.sh dump_sysinfo
 before_script:
   - ./travis-tool.sh dump_sysinfo
 after_success:
@@ -27,6 +28,7 @@ after_failure:
   - ./travis-tool.sh dump_logs
 install:
   - ./travis-tool.sh install_deps
+  - ./travis-tool.sh dump_sysinfo
   # TESTS
   #
   # The following lines exist to test various features of our travis
