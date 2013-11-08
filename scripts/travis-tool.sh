@@ -57,6 +57,12 @@ BootstrapLinux() {
         $(GetUbuntuPackageDecl r-base-core) \
         $(GetUbuntuPackageDecl r-recommended)
 
+    # Put packages on hold
+    sudo aptitude install -R -y \
+        $(GetUbuntuPackageDecl r-base-dev)= \
+        $(GetUbuntuPackageDecl r-base-core)= \
+        $(GetUbuntuPackageDecl r-recommended)=
+
     # Change permissions for /usr/local/lib/R/site-library
     # This should really be via 'staff adduser travis staff'
     # but that may affect only the next shell
