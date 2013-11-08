@@ -51,10 +51,13 @@ BootstrapLinux() {
     # --as-cran checks:
     #   https://stat.ethz.ch/pipermail/r-help//2012-September/335676.html
     sudo apt-get install --no-install-recommends -o Debug::pkgProblemResolver=Yes -o Debug::pkgPolicy=Yes \
+        r-base-dev r-base-core r-recommended \
+        qpdf
+
+    sudo apt-get install --no-install-recommends -o Debug::pkgProblemResolver=Yes -o Debug::pkgPolicy=Yes \
         $(GetUbuntuPackageDecl r-base-dev) \
         $(GetUbuntuPackageDecl r-base-core) \
-        $(GetUbuntuPackageDecl r-recommended) \
-        qpdf
+        $(GetUbuntuPackageDecl r-recommended)
 
     # Change permissions for /usr/local/lib/R/site-library
     # This should really be via 'staff adduser travis staff'
