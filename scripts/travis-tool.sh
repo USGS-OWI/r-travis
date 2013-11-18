@@ -263,7 +263,7 @@ case $COMMAND in
     "github_package")
         GithubPackage "$*"
         ;;
-    "install_deps")
+    "install_deps" | "deps_install")
         InstallDeps
         ;;
     "run_tests")

@@ -11,7 +11,7 @@ before_install:
   - chmod 755 ./travis-tool.sh
   - ./travis-tool.sh bootstrap
 install:
-  - ./travis-tool.sh install_deps
+  - ./travis-tool.sh deps_install
 notifications:
   email:
     on_success: change
