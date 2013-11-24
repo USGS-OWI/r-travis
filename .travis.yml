@@ -42,6 +42,9 @@ install:
   # Test install_r (which accepts multiple arguments).
   - ./travis-tool.sh install_r stringr lubridate
   - Rscript -e 'library(stringr); library(lubridate)'
+  - Rscript -e 'library(stringr); library(lubridate)'
+  # Test failing install_r for a package where system dependencies are not satisfied.
+  - if ./travis-tool.sh install_r rJava; then echo "Unexpected success for installing rJava"; exit 1; fi
   # Test github package installation (which accepts multiple arguments).
   - Rscript -e 'stopifnot(!any(c("assertthat", "testthat", "roxygen2") %in% installed.packages())'
   - ./travis-tool.sh install_github assertthat testthat klutometis/roxygen

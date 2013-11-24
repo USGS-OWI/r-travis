@@ -130,7 +130,7 @@ RInstall() {
     fi
 
     echo "Installing R package(s): ${pkg}"
-    Rscript -e 'install.packages(commandArgs(TRUE), repos="'"${CRAN}"'")' "$@"
+    Rscript -e 'options(warn=2); install.packages(commandArgs(TRUE), repos="'"${CRAN}"'")' "$@"
 }
 
 RBinaryInstall() {
