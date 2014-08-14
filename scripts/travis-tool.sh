@@ -209,11 +209,15 @@ DumpSysinfo() {
 
 DumpLogsByExtension() {
     if [[ -z "$1" ]]; then
-        echo "dump_logs_by_extension requires exactly one argument, got: $@"
+        echo "dump_logs_by_extension requires at least one argument, got: $@"
         exit 1
     fi
     extension=$1
     shift
+    dump_command="$@"
+    if [[ -z "$dump_command" ]]; then
+        dump_command=cat
+    fi
     package=$(find . -name *Rcheck -type d)
     if [[ ${#package[@]} -ne 1 ]]; then
         echo "Could not find package Rcheck directory, skipping log dump."
@@ -221,15 +225,15 @@ DumpLogsByExtension() {
     fi
     for name in $(find "${package}" -type f -name "*${extension}"); do
         echo ">>> Filename: ${name} <<<"
-        cat ${name}
+        ${dump_command} ${name}
     done
 }
 
 DumpLogs() {
     echo "Dumping test execution logs."
-    DumpLogsByExtension "out"
-    DumpLogsByExtension "log"
-    DumpLogsByExtension "fail"
+    DumpLogsByExtension "out" "$@"
+    DumpLogsByExtension "log" "$@"
+    DumpLogsByExtension "fail" "$@"
 }
 
 RunTests() {
@@ -337,7 +341,7 @@ case $COMMAND in
     ##
     ## Dump build or check logs
     "dump_logs")
-        DumpLogs
+        DumpLogs "$@"
         ;;
     ##
     ## Dump selected build or check logs
