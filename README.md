@@ -1,16 +1,19 @@
 # R+Travis
 
-[![Build Status](https://travis-ci.org/craigcitro/r-travis.png?branch=master,osx)](https://travis-ci.org/craigcitro/r-travis)
+[![Build Status](https://travis-ci.org/craigcitro/r-travis.svg?branch=master,osx)](https://travis-ci.org/craigcitro/r-travis)
 
 This package has a simple shell script for use in running R package builds on
 [travis](http://travis-ci.org/), along with a sample `.travis.yml` file. One
 should be able to set up travis for their own project by:
 * Copying `sample.travis.yml` to `.travis.yml` in your project.
+  * Copying `sample_revdeps.travis.yml` to `.travis.yml` in your project will passively check reverse dependencies.
 * Adding `.travis.yml` to your `.Rbuildignore`.
 * Modifying `.travis.yml` to list any packages that must be installed from
   github (instead of CRAN).
-* [Turn on travis](https://travis-ci.org/profile) for your project.
-* Add a [travis shield](http://about.travis-ci.org/docs/user/status-images/)
+* [Turn on travis](https://travis-ci.org/profile) for your project. (Note that
+  in some cases, it may take time for travis to start watching your repo.)
+* Add a
+  [travis "build status" shield](http://about.travis-ci.org/docs/user/status-images/)
   to your `README` file.
 
 See the [wiki](https://github.com/craigcitro/r-travis/wiki) for more

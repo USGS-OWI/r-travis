@@ -7,6 +7,7 @@ set -e
 set -x
 
 CRAN=${CRAN:-"http://cran.rstudio.com"}
+BIOC=${BIOC:-"http://bioconductor.org/biocLite.R"}
 OS=$(uname -s)
 
 # MacTeX installs in a new $PATH entry, and there's no way to force
@@ -64,6 +65,9 @@ BootstrapLinux() {
 
 BootstrapLinuxOptions() {
     if [[ -n "$BOOTSTRAP_LATEX" ]]; then
+        # We add a backports PPA for more recent TeX packages.
+        sudo add-apt-repository -y "ppa:texlive-backports/ppa"
+
         Retry sudo apt-get install --no-install-recommends \
             texlive-base texlive-latex-base texlive-generic-recommended \
             texlive-fonts-recommended texlive-fonts-extra \
@@ -123,6 +127,26 @@ AptGetInstall() {
     Retry sudo apt-get install "$@"
 }
 
+DpkgCurlInstall() {
+    if [[ "Linux" != "${OS}" ]]; then
+        echo "Wrong OS: ${OS}"
+        exit 1
+    fi
+
+    if [[ "" == "$*" ]]; then
+        echo "No arguments to dpkgcurl_install"
+        exit 1
+    fi
+
+    echo "Installing remote package(s) $@"
+    for rf in "$@"; do
+        curl -OL ${rf}
+        f=$(basename ${rf})
+        sudo dpkg -i ${f}
+        rm -v ${f}
+    done
+}
+
 RInstall() {
     if [[ "" == "$*" ]]; then
         echo "No arguments to r_install"
@@ -132,6 +156,18 @@ RInstall() {
     echo "Installing R package(s): ${pkg}"
     Rscript -e 'options(warn=2); install.packages(commandArgs(TRUE), repos="'"${CRAN}"'")' "$@"
 }
+
+
+BiocInstall() {
+    if [[ "" == "$*" ]]; then
+        echo "No arguments to bioc_install"
+        exit 1
+    fi
+
+    echo "Installing R package(s): ${pkg}"
+    Rscript -e 'library(methods); source("'"${BIOC}"'"); biocLite(commandArgs(TRUE))' $@
+}
+
 
 RBinaryInstall() {
     if [[ -z "$#" ]]; then
@@ -157,13 +193,14 @@ InstallGithub() {
 
     echo "Installing GitHub packages: $@"
     # Install the package.
-    Rscript -e 'library(devtools); library(methods); options(repos=c(CRAN="'"${CRAN}"'")); install_github(commandArgs(TRUE))' "$@"
+    Rscript -e 'library(devtools); library(methods); options(repos=c(CRAN="'"${CRAN}"'")); install_github(commandArgs(TRUE), build_vignettes = FALSE)' "$@"
 }
 
 InstallDeps() {
     EnsureDevtools
-    Rscript -e 'library(devtools); library(methods); options(repos=c(CRAN="'"${CRAN}"'")); devtools:::install_deps(dependencies = TRUE)'
+    Rscript -e 'library(devtools); library(methods); options(repos=c(CRAN="'"${CRAN}"'")); install_deps(dependencies = TRUE)'
 }
+
 
 DumpSysinfo() {
     echo "Dumping system information."
@@ -202,7 +239,23 @@ RunTests() {
     FILE=$(ls -1t *.tar.gz | head -n 1)
 
     echo "Testing with: R CMD check \"${FILE}\" ${R_CHECK_ARGS}"
-    R CMD check "${FILE}" ${R_CHECK_ARGS}
+    _R_CHECK_CRAN_INCOMING_=${_R_CHECK_CRAN_INCOMING_:-FALSE}
+    if [[ "$_R_CHECK_CRAN_INCOMING_" == "FALSE" ]]; then
+        echo "(CRAN incoming checks are off)"
+    fi
+    _R_CHECK_CRAN_INCOMING_=${_R_CHECK_CRAN_INCOMING_} R CMD check "${FILE}" ${R_CHECK_ARGS}
+
+    # Check reverse dependencies
+    if [[ -n "$R_CHECK_REVDEP" ]]; then
+        echo "Checking reverse dependencies"
+        Rscript -e 'library(devtools); checkOutput <- unlist(revdep_check(as.package(".")$package));if (!is.null(checkOutput)) {print(data.frame(pkg = names(checkOutput), error = checkOutput));for(i in seq_along(checkOutput)){;cat("\n", names(checkOutput)[i], " Check Output:\n  ", paste(readLines(regmatches(checkOutput[i], regexec("/.*\\.out", checkOutput[i]))[[1]]), collapse = "\n  ", sep = ""), "\n", sep = "")};q(status = 1, save = "no")}'
+    fi
+
+    # Create binary package (currently Windows only)
+    if [[ "${OS:0:5}" == "MINGW" ]]; then
+        echo "Creating binary package"
+        R CMD INSTALL --build "${FILE}"
+    fi
 
     if [[ -n "${WARNINGS_ARE_ERRORS}" ]]; then
         if DumpLogsByExtension "00check.log" | grep -q WARNING; then
@@ -248,9 +301,19 @@ case $COMMAND in
         AptGetInstall "$@"
         ;;
     ##
+    ## Install a binary deb package via a curl call and local dpkg -i
+    "install_dpkgcurl"|"dpkgcurl_install")
+        DpkgCurlInstall "$@"
+        ;;
+    ##
     ## Install an R dependency from CRAN
     "install_r"|"r_install")
         RInstall "$@"
+        ;;
+    ##
+    ## Install an R dependency from Bioconductor
+    "install_bioc"|"bioc_install")
+        BiocInstall "$@"
         ;;
     ##
     ## Install an R dependency as a binary (via c2d4u PPA)
