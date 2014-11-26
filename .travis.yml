@@ -11,7 +11,7 @@ env:
     - OS=$(uname -s)
   matrix:
     - BOOTSTRAP_LATEX=" "
-    - R_BUILD_ARGS=" " R_CHECK_ARGS="--as-cran" BOOTSTRAP_LATEX="1" _R_CHECK_CRAN_INCOMING_=TRUE
+    - R_BUILD_ARGS=" " R_CHECK_ARGS="--as-cran" BOOTSTRAP_LATEX="1" _R_CHECK_CRAN_INCOMING_=TRUE BOOTSTRAP_PANDOC="1"
 script: ./travis-tool.sh run_tests
 notifications:
   email:
@@ -46,7 +46,7 @@ install:
   - if ./travis-tool.sh install_r rJava; then echo "Unexpected success for installing rJava"; exit 1; fi
   # Test github package installation (which accepts multiple arguments).
   - Rscript -e 'stopifnot(!any(c("assertthat", "testthat", "roxygen2") %in% installed.packages())'
-  - ./travis-tool.sh install_github assertthat testthat klutometis/roxygen
+  - ./travis-tool.sh install_github hadley/assertthat hadley/testthat klutometis/roxygen
   - Rscript -e 'library(assertthat); library(testthat); library(roxygen2)'
   # Test R binary installation.
   - if test ${OS} = Linux; then ./travis-tool.sh install_r_binary RUnit survey; fi
@@ -54,3 +54,4 @@ install:
   - ./travis-tool.sh dump_sysinfo | grep -q 'R version '
   - ./travis-tool.sh bioc_install GenomicFeatures AnnotationDbi
   - Rscript -e 'library(GenomicFeatures); library(AnnotationDbi)'
+  - if test ${BOOTSTRAP_PANDOC} = 1; then pandoc --version; fi

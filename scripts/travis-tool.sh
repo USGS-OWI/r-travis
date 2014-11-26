@@ -8,7 +8,12 @@ set -x
 
 CRAN=${CRAN:-"http://cran.rstudio.com"}
 BIOC=${BIOC:-"http://bioconductor.org/biocLite.R"}
+BIOC_USE_DEVEL=${BIOC_USE_DEVEL:-"TRUE"}
 OS=$(uname -s)
+
+PANDOC_VERSION='1.12.4.2'
+PANDOC_DIR="${HOME}/opt"
+PANDOC_URL="https://s3.amazonaws.com/rstudio-buildtools/pandoc-${PANDOC_VERSION}.zip"
 
 # MacTeX installs in a new $PATH entry, and there's no way to force
 # the *parent* shell to source it from here. So we just manually add
@@ -20,6 +25,11 @@ PATH="${PATH}:/usr/texbin"
 
 R_BUILD_ARGS=${R_BUILD_ARGS-"--no-build-vignettes --no-manual"}
 R_CHECK_ARGS=${R_CHECK_ARGS-"--no-build-vignettes --no-manual --as-cran"}
+
+R_USE_BIOC_CMDS="source('${BIOC}');"\
+" tryCatch(useDevel(${BIOC_USE_DEVEL}),"\
+" error=function(e) {if (!grepl('already in use', e$message)) {e}});"\
+" options(repos=biocinstallRepos());"
 
 Bootstrap() {
     if [[ "Darwin" == "${OS}" ]]; then
@@ -34,6 +44,15 @@ Bootstrap() {
     if ! (test -e .Rbuildignore && grep -q 'travis-tool' .Rbuildignore); then
         echo '^travis-tool\.sh$' >>.Rbuildignore
     fi
+}
+
+InstallPandoc() {
+    local os_path="$1"
+    mkdir -p "${PANDOC_DIR}"
+    curl -o /tmp/pandoc-${PANDOC_VERSION}.zip ${PANDOC_URL}
+    unzip -j /tmp/pandoc-${PANDOC_VERSION}.zip "pandoc-${PANDOC_VERSION}/${os_path}/pandoc" -d "${PANDOC_DIR}"
+    chmod +x "${PANDOC_DIR}/pandoc"
+    sudo ln -s "${PANDOC_DIR}/pandoc" /usr/local/bin
 }
 
 BootstrapLinux() {
@@ -74,6 +93,9 @@ BootstrapLinuxOptions() {
             texlive-extra-utils texlive-latex-recommended texlive-latex-extra \
             texinfo lmodern
     fi
+    if [[ -n "$BOOTSTRAP_PANDOC" ]]; then
+        InstallPandoc 'linux/debian/x86_64'
+    fi
 }
 
 BootstrapMac() {
@@ -102,6 +124,9 @@ BootstrapMacOptions() {
         #   https://stat.ethz.ch/pipermail/r-sig-mac/2010-May/007399.html
         sudo tlmgr update --self
         sudo tlmgr install inconsolata upquote courier courier-scaled helvetic
+    fi
+    if [[ -n "$BOOTSTRAP_PANDOC" ]]; then
+        InstallPandoc 'mac'
     fi
 }
 
@@ -153,10 +178,9 @@ RInstall() {
         exit 1
     fi
 
-    echo "Installing R package(s): ${pkg}"
+    echo "Installing R package(s): $@"
     Rscript -e 'options(warn=2); install.packages(commandArgs(TRUE), repos="'"${CRAN}"'")' "$@"
 }
-
 
 BiocInstall() {
     if [[ "" == "$*" ]]; then
@@ -164,10 +188,9 @@ BiocInstall() {
         exit 1
     fi
 
-    echo "Installing R package(s): ${pkg}"
-    Rscript -e 'library(methods); source("'"${BIOC}"'"); biocLite(commandArgs(TRUE))' $@
+    echo "Installing R Bioconductor package(s): $@"
+    Rscript -e "${R_USE_BIOC_CMDS}"' biocLite(commandArgs(TRUE))' "$@"
 }
-
 
 RBinaryInstall() {
     if [[ -z "$#" ]]; then
@@ -201,6 +224,10 @@ InstallDeps() {
     Rscript -e 'library(devtools); library(methods); options(repos=c(CRAN="'"${CRAN}"'")); install_deps(dependencies = TRUE)'
 }
 
+InstallBiocDeps() {
+    EnsureDevtools
+    Rscript -e "${R_USE_BIOC_CMDS}"' library(devtools); install_deps(dependencies = TRUE)'
+}
 
 DumpSysinfo() {
     echo "Dumping system information."
@@ -214,7 +241,7 @@ DumpLogsByExtension() {
     fi
     extension=$1
     shift
-    package=$(find . -name *Rcheck -type d)
+    package=$(find . -maxdepth 1 -name "*.Rcheck" -type d)
     if [[ ${#package[@]} -ne 1 ]]; then
         echo "Could not find package Rcheck directory, skipping log dump."
         exit 0
@@ -329,6 +356,11 @@ case $COMMAND in
     ## Install package dependencies from CRAN (needs devtools)
     "install_deps")
         InstallDeps
+        ;;
+    ##
+    ## Install package dependencies from Bioconductor and CRAN (needs devtools)
+    "install_bioc_deps")
+        InstallBiocDeps
         ;;
     ##
     ## Run the actual tests, ie R CMD check
