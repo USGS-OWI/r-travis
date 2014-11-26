@@ -178,8 +178,13 @@ RInstall() {
         exit 1
     fi
 
+    if [[ -n "${VERIFY_INSTALL_ERRORS}" ]]; then
+        options_warn="options(warn=2); "
+    else
+        options_warn=
+    fi
     echo "Installing R package(s): $@"
-    Rscript -e 'options(warn=2); install.packages(commandArgs(TRUE), repos="'"${CRAN}"'")' "$@"
+    Rscript -e $options_warn'install.packages(commandArgs(TRUE), repos="'"${CRAN}"'")' "$@"
 }
 
 BiocInstall() {
