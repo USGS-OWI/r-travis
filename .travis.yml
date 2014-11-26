@@ -45,7 +45,7 @@ install:
   # Test install_r for a non-existing package.
   - ./travis-tool.sh install_r jibbetnich
   # Test failing install_r for a non-existing package when VERIFY_INSTALL_ERRORS is set.
-  - ( VERIFY_INSTALL_ERRORS=1; if ./travis-tool.sh install_r jibbetnich; then echo "Unexpected success for installing non-existing package"; exit 1; fi )
+  - ( export VERIFY_INSTALL_ERRORS=1; if ./travis-tool.sh install_r jibbetnich; then echo "Unexpected success for installing non-existing package"; exit 1; fi )
   # Test github package installation (which accepts multiple arguments).
   - Rscript -e 'stopifnot(!any(c("assertthat", "testthat", "roxygen2") %in% installed.packages())'
   - ./travis-tool.sh install_github hadley/assertthat hadley/testthat klutometis/roxygen
