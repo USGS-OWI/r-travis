@@ -184,7 +184,7 @@ RInstall() {
         options_warn=
     fi
     echo "Installing R package(s): $@"
-    Rscript -e $options_warn'install.packages(commandArgs(TRUE), repos="'"${CRAN}"'")' "$@"
+    Rscript -e ''$options_warn'install.packages(commandArgs(TRUE), repos="'"${CRAN}"'")' "$@"
 }
 
 BiocInstall() {
